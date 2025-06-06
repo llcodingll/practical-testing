@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import java.time.LocalDateTime;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import sample.cafekiosk.unit.beverage.Americano;
 import sample.cafekiosk.unit.beverage.Latte;
@@ -21,6 +22,7 @@ class CafeKioskTest {
     }
 
     @Test
+    @DisplayName("음료 1개를 추가하면 주문 목록에 담긴다.")
     void add() {
         CafeKiosk cafeKiosk = new CafeKiosk();
         cafeKiosk.add(new Americano());
@@ -30,6 +32,7 @@ class CafeKioskTest {
     }
 
     @Test
+    @DisplayName("음료 여러개 추가 테스트")
     void addSeveralBeverages() {
         CafeKiosk cafeKiosk = new CafeKiosk();
         Americano americano = new Americano();
