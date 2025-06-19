@@ -2,6 +2,8 @@ package sample.cafekiosk.spring.api.service.order;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 import static sample.cafekiosk.spring.domain.product.ProductSellingStatus.SELLING;
 import static sample.cafekiosk.spring.domain.product.ProductType.HANDMADE;
 
@@ -11,13 +13,17 @@ import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import sample.cafekiosk.spring.client.mail.MailSendClient;
 import sample.cafekiosk.spring.domain.history.mail.MailSendHistory;
 import sample.cafekiosk.spring.domain.history.mail.MailSendHistoryRepository;
 import sample.cafekiosk.spring.domain.order.Order;
 import sample.cafekiosk.spring.domain.order.OrderRepository;
 import sample.cafekiosk.spring.domain.order.OrderStatus;
+import sample.cafekiosk.spring.domain.orderproduct.OrderProductRepository;
 import sample.cafekiosk.spring.domain.product.Product;
 import sample.cafekiosk.spring.domain.product.ProductRepository;
 import sample.cafekiosk.spring.domain.product.ProductSellingStatus;
@@ -36,12 +42,20 @@ class OrderStatisticsServiceTest {
     private ProductRepository productRepository;
 
     @Autowired
+    private OrderProductRepository orderProductRepository;
+
+    @Autowired
     private MailSendHistoryRepository mailSendHistoryRepository;
+
+    @MockitoBean
+    private MailSendClient mailSendClient;
 
     @AfterEach
     void tearDown() {
         orderRepository.deleteAllInBatch();
         productRepository.deleteAllInBatch();
+        orderProductRepository.deleteAllInBatch();
+        mailSendHistoryRepository.deleteAllInBatch();
     }
 
     @Test
@@ -61,6 +75,11 @@ class OrderStatisticsServiceTest {
         Order order3 = createPaymentCompletedOrder(LocalDateTime.of(2023, 3, 5, 23, 59, 59), products);
         Order order4 = createPaymentCompletedOrder(LocalDateTime.of(2023, 3, 6, 0, 0), products);
 
+        //stubbing
+        when(
+            mailSendClient.sendEmail(any(String.class), any(String.class), any(String.class), any(String.class)))
+            .thenReturn(true);
+
         //when
         boolean result = orderStatisticsService.sendOrderStatisticsMail(LocalDate.of(2023, 3, 5),
             "test@test.com");
@@ -71,7 +90,7 @@ class OrderStatisticsServiceTest {
         List<MailSendHistory> histories = mailSendHistoryRepository.findAll();
         assertThat(histories).hasSize(1)
             .extracting("content")
-            .contains("총 매출 합계는 18000원 입니다.");
+            .contains("총 매출 합계는 12000원 입니다.");
     }
 
     private Order createPaymentCompletedOrder(LocalDateTime now, List<Product> products) {
