@@ -23,10 +23,10 @@ import sample.cafekiosk.spring.domain.history.mail.MailSendHistoryRepository;
 @ExtendWith(MockitoExtension.class)
 class MailServiceTest {
 
-    @Mock
+    @Spy
     private MailSendClient mailSendClient;
 
-    @Spy
+    @Mock
     private MailSendHistoryRepository mailSendHistoryRepository;
 
     @InjectMocks
