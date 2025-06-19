@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
@@ -37,11 +38,11 @@ class MailServiceTest {
     @DisplayName("메일 전송 테스트")
     void sendMail() {
         //given
-        Mockito.when(
-            mailSendClient.sendEmail(anyString(), anyString(), anyString(), anyString()))
-            .thenReturn(true);
+//        Mockito.when(
+//            mailSendClient.sendEmail(anyString(), anyString(), anyString(), anyString()))
+//            .thenReturn(true);
 
-        BDDMockito.given(
+        given(
                 mailSendClient.sendEmail(anyString(), anyString(), anyString(), anyString()))
             .willReturn(true);
 
